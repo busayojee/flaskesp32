@@ -7,6 +7,25 @@
     <title>home</title>
 </head>
 <body>
-    <h1>Hello</h1>
+    <table border="2" cellpadding="4" cellspacing="5" id="table-box" >
+        <tr>
+            <th>UUID</th>
+            <th>Timestamp</th>
+            <th>Decibel</th>
+        </tr>
+        {% for data in datas %}
+        <tr>
+            <td>{{data.uuid}}</td>
+            <td>{{data.timestamp}}</td>
+            <td>{{data.decibel}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script>
+        window.setInterval('refresh()', 5000); 	
+        function refresh() {
+            window .location.reload();
+        }
+    </script>
 </body>
 </html>
