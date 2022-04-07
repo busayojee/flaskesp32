@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, flash, session
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from sqlalchemy import desc
 from sqlalchemy.dialects.postgresql import UUID
@@ -14,7 +14,7 @@ import json
 
 app = Flask(__name__)
 api = Api(app)
-
+app.secret_key = "flaskesp32"
 
 
 # Creating the database
@@ -76,12 +76,12 @@ def login():
     name = request.form['username']
     pwd = request.form['password']
     if name not in login_database:
-        
-        return render_template('login.html', info = 'User not found')
+        flash("User not found")
+        return render_template('login.html')
     else:
         if login_database[name]!= pwd:
-            
-            return render_template('login.html', info = 'incorrect password')
+            flash("Incorrect password")
+            return render_template('login.html')
         else:
             return redirect('/home')
 
