@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
+from sqlalchemy import desc
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from flask_sqlalchemy import SQLAlchemy
@@ -14,136 +15,54 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
-# class HelloWorld(Resource):
-#     def get(self):
-#         return{"data":"Helloworld"}
-# class Helloname(Resource):
-#     def get(self, name):
-#         return{"data":"{}".format(name)}
 
-# api.add_resource(HelloWorld, '/helloworld')
-# api.add_resource(Helloname, "/helloworld/<string:name>")
-
-# dictionary sensor data for temporary api testing 
-sensordata = {
-    1: {"timestamp":"yy-mm-dd-hh-mm-ss", "decibel":50},
-    2: {"timestamp":"yyy-mmm-ddd-hhh-mmm-sss", "decibel":150},
-    3: {"timestamp":"yyyy-mmmm-dddd-hhhh-mmmm-ssss", "decibel":250}
-}
-
-#  getting all the sensor data
 
 # Creating the database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sensor.db'
-# db = SQLAlchemy(app)
-# # creating the UUID's
-# def generate_UUID():
-#     return str(uuid.uuid4)
-
-# class Data(db.Model):
-#     id = db.Column(db.String(60), name = "uuid", primary_key=True, default = generate_UUID)
-#     timestamp = db.Column(db.Time, unique = True)
-#     decibel = db.Column(db.Integer, nullable = False)
-# # db.create_all()
-
-# test database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sensor.db'
 db = SQLAlchemy(app)
+
 # creating the UUID's
 def generate_UUID():
     return "cac1010b-fa6e-4641-9d95-ba82ec4e5d27"
 
 
 class Data(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(60), name = "uuid", nullable = False, default = generate_UUID)
-    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow())
+    uuid = db.Column(db.String(60), name = "uuid", nullable = False, primary_key = True)
+    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow, primary_key=True)
     decibel = db.Column(db.Integer, nullable = False)
 # db.create_all()
 
 # creating my request parser
 sensor_post = reqparse.RequestParser()
-sensor_post.add_argument("uuid",type = str, default = generate_UUID)
-# sensor_post.add_argument("timestamp",type = str, help= "This is Required", required = True)
-# sensor_post.add_argument("timestamp",type = str, required = False)
+sensor_post.add_argument("uuid",type = str, help = "This is required", default = generate_UUID, required = True)
 sensor_post.add_argument("decibel",type = int, help= "This is Required", required = True)
 
+# resource fields
 resource_fields = {
-    "id": fields.Integer,
     "uuid":fields.String,
     "timestamp": fields.DateTime,
     "decibel":fields.Integer
 }
 
-# def myconverter(o):
-#     if isinstance(o, datetime.utcnow()):
-#         return o.isoformat()
+
 class Sensor(Resource):
-    
     def get(self):
         datas = Data.query.all()
-        all = {}
-        
-
+        all = []
         for data in datas:
-           all[data.id] = {"uuid":data.uuid, "timestamp":str(data.timestamp), "decibel":data.decibel}
+            all.append ({"uuid":str(data.uuid), "timestamp":str(data.timestamp), "decibel":data.decibel})
         return all
-
-
-class SensorData(Resource):
-    # getting sensor data by ID
     @marshal_with(resource_fields)
-    def get(self, sensor_id,uuid):
-        data = Data.query.filter_by(id = sensor_id).first()
-        if str(uuid)!= generate_UUID():
-            abort(405)
-
-        if not data:
-            abort(404)
-        
-        return data
-
-    # posting sensor data
-    @marshal_with(resource_fields)
-    def post(self, sensor_id, uuid):
+    def post(self):
         args = sensor_post.parse_args()
-        # sensor_id = args["id"]
-        # data = Data.query.filter_by(id = sensor_id).first()
-
-        if str(uuid)!=generate_UUID():
+        sensor_new =Data(uuid = args['uuid'], decibel = args["decibel"])
+        if args['uuid'] != generate_UUID():
             abort(405)
-        sensor_new =Data(id = sensor_id, decibel = args["decibel"])
         db.session.add(sensor_new)
         db.session.commit()
         return sensor_new, 201
 
-    # Deleting sonsor data 
-    # Not working I don't know why
-  
-    def delete(self, sensor_id,uuid):
-        data = Data.query.filter_by(id = sensor_id).first()
-        if str(uuid)!=generate_UUID():
-            abort(405)
-        
-        db.session.delete(data)
-        return "Data deleted", 204
-    
-api.add_resource(SensorData, "/sensor/<int:sensor_id>/<string:uuid>")
 api.add_resource(Sensor, "/sensor")
-
-@marshal_with(resource_fields)
-@app.route('/sensordata/<string:id>/<db>')
-def recv_data(id, db):
-    args = sensor_post.parse_args()
-    
-    if str(id) != "1234":
-        abort(405)
-    
-    sensor_new = Data(id = args["id"], decibel = db)
-    db.session.add(sensor_new)
-    db.session.commit()
-    return 201, sensor_new
-    # return str(uuid) + " " + str(db)
 
 @app.route('/')
 def index():
@@ -154,7 +73,6 @@ login_database = {"busayo":"busayo","admin":"admin","1234":"1234"}
 # logging into the website
 @app.route('/login', methods= ['GET', 'POST'])
 def login():
-    # if request.method== 'POST':
     name = request.form['username']
     pwd = request.form['password']
     if name not in login_database:
@@ -168,9 +86,10 @@ def login():
             return redirect('/home')
 
 @app.route('/home', methods = ['GET','POST'])
+
 def home():
     if request.method == 'GET':
-        all_data = Data.query.order_by(Data.timestamp).all()
+        all_data = Data.query.order_by(desc(Data.timestamp)).all()
     return render_template("home.html", datas = all_data)
 
 # running the flask app
