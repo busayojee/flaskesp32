@@ -4,26 +4,56 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
     <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'main.css')}}"/>
-   
-    
-</head> 
-
+    <script src="https://kit.fontawesome.com/ab599df3b2.js" crossorigin="anonymous"></script>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'main.css')}}"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+</head>
 <body>
-    <h1>Login</h1>
-    <div class="content">
-    <div class="container">
-        <form action="/login" method="post">
-            <h2></h2>Username <br>
-            <input type="text" name="username"><br>
-            Password <br>
-            <input type="password" name="password"><br> <br>
-            <input type="submit" value="login">
-        </form>
+      {% with messages = get_flashed_messages() %}  
+    {% if messages %}  
+          {% for message in messages %}
+          <div class="notify" id = "x_button"> 
+           <i class="fa-solid fa-xmark button"onclick="closebutton()"></i>
+           <div id="info"> <p>{{ message }}</p> </div> 
+          </div>
+               
+          {% endfor %}  
+    {% endif %}  
+ {% endwith %}
+ 
+    <div class="box"> 
+     
+        <div class="container">
+             <h1 style="color: #818589;">Login</h1>
+            <form action="/login" method="post">
+               <div class="li"> 
+                   <i class="fa-solid fa-user"></i>
+                   <label>Username</label>
+                </div>
+                    <input type="text" name="username">
+                <div class="li">
+                    <i class="fa-solid fa-lock"></i>
+                    <label>Password</label>
+                </div>
+                    <input type="password" name="password">
+                <input type="submit" value="SIGN IN">
+            </form>
         
+        </div>
     </div>
-</div>
-    <h5>{{info}}</h5>
+
+    <script>
+        info = document.getElementById("info")
+        x_button = document.getElementById("x_button")
+        function closebutton(){
+            info.style.display = "none";
+            x_button.style.display = "none";
+        }
+    </script>
+
 </body>
 </html>
