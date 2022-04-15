@@ -1,0 +1,15 @@
+{% for data in datas.items %}
+{% if loop.last and datas.has_next %}
+    <tr hx-get="{{url_for('home', page = datas.next_num)}}" hx-trigger="revealed" hx-swap="afterend">
+    {% else %}
+        <tr>
+      {% endif %} 
+         
+            <td scope="row">{{data.uuid}}</td>
+            <td scope="row">{{data.timestamp}}</td>
+            <td scope="row">{{data.decibel}}</td>
+            
+        </tr>
+        
+        {% endfor %}
+       

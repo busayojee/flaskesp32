@@ -1,7 +1,26 @@
-body{
+
+.page{
+    margin: auto;
+    padding: 70px;
+}
+.login{
+    display: flex;
+    width: 100%;
+    height: 100%;
     background-color: rgb(47, 41, 51);
     overflow: hidden;
     
+}
+@keyframes transitionin{
+    from{
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0px);
+
+    }
 }
 
 .li{
@@ -22,7 +41,7 @@ body{
     width:50%;
     height: 50%;
     margin:auto ;
-    background:rgb(73, 58, 105) ;
+    background:rgb(255, 255, 255) ;
     padding: 40px;
     border: none;
     text-align: center;
@@ -30,10 +49,10 @@ body{
    }
 
 .container{
-    background: white;
+    background: rgb(244, 244, 244);
     border-radius: 20px;
     width: 50%;
-    height: 80%;
+    height: 115%;
     font-family: 'Quicksand', sans-serif;
 }
 
@@ -44,7 +63,7 @@ body{
     text-transform: uppercase;
     font-weight: 500;
     padding: 30px 0;
-    background-color: rgb(241, 236, 236);
+    background-color:#10e7ee;
     border-radius: 20px 20px 0 0;
     border-bottom: none;
    }
@@ -56,7 +75,7 @@ body{
     padding: 0 5px;
     height: 25px;
     outline: none;
-    background:none;
+    background:rgb(244, 244, 244) ;
     margin-bottom: 20px;
     transition: 0.25s;
 }
@@ -101,6 +120,7 @@ body{
     text-transform: uppercase;
     font-weight: bold;
     font-family: 'Oswald', sans-serif;
+    animation: transitionin 2s;
 }
 
 .notify{  
@@ -109,14 +129,47 @@ body{
     box-sizing:border-box;
     color:white;  
     text-align:center; 
-    background:rgba(231, 19, 19, 0.788);
+    background:rgba(226, 102, 102, 0.788);
    overflow-y:hidden; 
 	max-height: 300px; /* approximate max height */
     width: 100%;
-	transition-property: all;
+	/* transition-property: all;
 	transition-duration: 1s;
-	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1); */
+    animation: transtionin 2s;
     
+   }
+   
+   
+  /* .box_top{ 
+    display: flex;
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width:80%;
+    height: 20%;
+    margin:auto ;
+    background:rgb(255, 255, 255) ;
+    padding: 40px;
+    border: none;
+    text-align: center;
+     
+   } */
+  @media screen and (max-width:1060px) {
+      .body{
+          overflow:hidden;
+      }
+      .container{
+         margin: 0px;
+         width: 720px;
+      }
+     .page{
+         margin: auto;
+         padding: 20px;
+     }
   }
 
   

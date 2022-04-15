@@ -1,26 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'layout.html' %}
+{% block head %}
     <title>home</title>
-</head>
-<body>
-    <table border="2" cellpadding="4" cellspacing="5" id="table-box" >
-        <tr>
-            <th>UUID</th>
-            <th>Timestamp</th>
-            <th>Decibel</th>
+  
+{% endblock %}
+{% block body %}
+
+ 
+
+        
+
+ 
+     
+   
+    <table class="table table-primary table-striped">
+        <tr> 
+            <th scope="col">UUID</th>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Decibel</th>
         </tr>
-        {% for data in datas %}
-        <tr>
-            <td>{{data.uuid}}</td>
-            <td>{{data.timestamp}}</td>
-            <td>{{data.decibel}}</td>
-        </tr>
-        {% endfor %}
+       <tbody hx-get="/home" hx-trigger="every 2s">
+        {% include 'table.html' %}
+      
+   </tbody>
+   
     </table>
     
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% block body %}
+<form method="GET" action="/search">
+<div class="w-small w-2/3 mx-auto py-10 text-gray-600">
+
+<input type="text"
+name="search"
+hx-get = "/search"
+hx-trigger="keyup changed delay:500ms"
+hx-target="#search_res"
+hx-indicator=".htmx-indicator"
+placeholder="Search"
+class="bg-white h-10 px-5 pr-10 rounded-full text-2xl focus:outline-none"
+>
+<span class="htmx-indicator">Searching...</span>
+<button type="submit">Search</button>
+
+</div> 
+</form>
+
+
+
+ <table class="table table-primary table-striped">
+    <tr> 
+        <th scope="col">UUID</th>
+        <th scope="col">Timestamp</th>
+        <th scope="col">Decibel</th>
+    </tr>
+   <tbody id="search_res">
+   {% include 'searchres.html' %}
+   </tbody>
+ </table>
+
+     {% endblock %}   
+        
+        
+       
+
+

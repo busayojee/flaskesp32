@@ -1,11 +1,9 @@
-from flask import Flask, redirect, render_template, request, flash, session
+from flask import Flask, redirect, render_template, request, flash, session,url_for
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from sqlalchemy import desc
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import json
+
 
 
 
@@ -16,14 +14,13 @@ app = Flask(__name__)
 api = Api(app)
 app.secret_key = "flaskesp32"
 
-
 # Creating the database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sensor.db'
 db = SQLAlchemy(app)
 
 # creating the UUID's
 def generate_UUID():
-    return "cac1010b-fa6e-4641-9d95-ba82ec4e5d27"
+   return ["cac1010b-fa6e-4641-9d95-ba82ec4e5d27", "abcde"]
 
 
 class Data(db.Model):
@@ -31,6 +28,7 @@ class Data(db.Model):
     timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow, primary_key=True)
     decibel = db.Column(db.Integer, nullable = False)
 # db.create_all()
+
 
 # creating my request parser
 sensor_post = reqparse.RequestParser()
@@ -56,7 +54,7 @@ class Sensor(Resource):
     def post(self):
         args = sensor_post.parse_args()
         sensor_new =Data(uuid = args['uuid'], decibel = args["decibel"])
-        if args['uuid'] != generate_UUID():
+        if args['uuid'] not in generate_UUID():
             abort(405)
         db.session.add(sensor_new)
         db.session.commit()
@@ -85,12 +83,76 @@ def login():
         else:
             return redirect('/home')
 
-@app.route('/home', methods = ['GET','POST'])
-
+@app.route('/home')
 def home():
-    if request.method == 'GET':
-        all_data = Data.query.order_by(desc(Data.timestamp)).all()
+    # pagination
+    page = request.args.get('page', 1, type=int)
+    all_data = Data.query.order_by(desc(Data.timestamp)).paginate(page = page, per_page = 20)
+    # top_data = Data.query.order_by(desc(Data.timestamp)).first()
+    # print(dir(all_data))
+
+    #for infinte scroll
+    if 'hx_request' in request.headers:
+        return render_template("table.html", datas = all_data)
     return render_template("home.html", datas = all_data)
+
+# for active search
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    # if methods == 'POST':
+    search_table = request.args.get('search')
+    if search_table:
+        tables = Data.query.filter(Data.uuid.contains(search_table) | Data.timestamp.contains(search_table))
+        
+    else:
+        tables = []
+    # return render_template('search.html', result = tables)
+        
+    if 'hx_request' in request.headers:
+        return render_template("searchres.html", result = tables)
+    return render_template('search.html', result = tables)
+
+# for average
+def get_average(a,w):
+    if a and w:
+        a = int(a)
+        last_data = Data.query.filter_by(uuid = w).order_by(desc(Data.timestamp)).limit(a * 60).all()
+        divider = len(last_data)
+        num = 0
+        for last in last_data:
+            num = num + last.decibel
+        if divider != 0:
+            average = num/divider
+            return int(average)
+        flash("Incorrect UUID")
+@app.route('/average')
+def average():
+    # per hour
+    a = request.args.get('a')
+    uuid1 = request.args.get('uuid')
+    average1 = get_average(a,uuid1)
+    if average1:
+        return render_template('average.html', avg = average1)
+    # per day
+    n = request.args.get('n')
+    uuid2 = request.args.get('uuid2')
+    average2 = get_average(n, uuid2)
+    if average2:
+    # print(int(average))
+    # if 'hx_request' in request.headers:
+    #     return render_template('avg.html', avg = average)
+        return render_template('average.html', avn = average2)
+        
+    # per week
+    w = request.args.get('w')
+    uuid2 = request.args.get('uuid2')
+    average3 = get_average(w,uuid2)
+            # print(int(average))
+    # if 'hx_request' in request.headers:
+    #     return render_template('avg.html', avg = average)
+    if average3:
+        return render_template('average.html', avw = average3)
+    return render_template('average.html')
 
 # running the flask app
 

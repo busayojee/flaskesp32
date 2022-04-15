@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block head %}
+<title>average</title>
+{% endblock %}
+{% block body %}
+<div>
+{% with messages = get_flashed_messages() %}  
+    {% if messages %}  
+          {% for message in messages %}
+          <div class="notify" id = "x_button"> 
+           <i class="fa-solid fa-xmark button"onclick="closebutton()"></i>
+           <div id="info"> <p>{{ message }}</p> </div> 
+          </div>
+               
+          {% endfor %}  
+    {% endif %}  
+ {% endwith %}
+</div>
+<form action="/average" method="get">
+        <input list="uuid" name="uuid">
+        <datalist id="uuid">
+          <option value="cac1010b-fa6e-4641-9d95-ba82ec4e5d27">
+            <option value="abcde">
+        </datalist> 
+      
+<input type="number" name="a" min="1" max="24" step="1" >
+<button class="btn btn-success" type="submit" hx-get="/average" hx-swap="beforeend" hx-target="#avgres" >Calculate</button>
+</form>
+<div>
+    <span id = avgres>
+        {% include 'avg.html' %}
+    </span>
+   
+
+</div>
+   
+<form action="/average" method="get">
+    <input list="uuid" name="uuid2">
+        
+    <input type="number" name="n" min="1" max="31" step="1" >
+    <button class="btn btn-success" type="submit">Calculate</button>
+    </form>
+    <div id = avgres>
+        <span>{{avn}}</span>
+    
+    </div>
+    <form action="/average" method="get">
+        <input list="uuid" name="uuid2">
+            
+        <input type="number" name="w" min="1" max="52" step="1" >
+        <button class="btn btn-success" type="submit">Calculate</button>
+        </form>
+        <div id = avgres>
+            <span>{{avw}}</span>
+        
+        </div>
+        <script>
+            info = document.getElementById("info")
+            x_button = document.getElementById("x_button")
+            function closebutton(){
+                info.style.display = "none";
+                x_button.style.display = "none";
+            }
+        </script>
+
+{% endblock %}

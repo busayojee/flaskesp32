@@ -12,7 +12,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
 </head>
+<!-- <div class = "login"> -->
 <body>
+    
       {% with messages = get_flashed_messages() %}  
     {% if messages %}  
           {% for message in messages %}
@@ -28,7 +30,7 @@
     <div class="box"> 
      
         <div class="container">
-             <h1 style="color: #818589;">Login</h1>
+             <h1 style="color: white;">Login</h1>
             <form action="/login" method="post">
                <div class="li"> 
                    <i class="fa-solid fa-user"></i>
@@ -56,4 +58,5 @@
     </script>
 
 </body>
+<!-- </div> -->
 </html>
