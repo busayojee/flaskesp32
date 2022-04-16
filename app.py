@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, flash, session,url_for
+from flask import Flask, redirect, render_template, request, flash, session, url_for
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
@@ -71,46 +71,72 @@ login_database = {"busayo":"busayo","admin":"admin","1234":"1234"}
 # logging into the website
 @app.route('/login', methods= ['GET', 'POST'])
 def login():
-    name = request.form['username']
-    pwd = request.form['password']
-    if name not in login_database:
-        flash("User not found")
-        return render_template('login.html')
-    else:
-        if login_database[name]!= pwd:
-            flash("Incorrect password")
+    if request.method == 'POST':
+        name = request.form['username']
+        pwd = request.form['password']
+        session['name'] = name
+        session['pwd'] = pwd
+        if name not in login_database:
+            flash("User not found")
             return render_template('login.html')
         else:
-            return redirect('/home')
+            if login_database[name]!= pwd:
+                flash("Incorrect password")
+                return render_template('login.html')
+            else:
+                return redirect('/home')
+    else:
+        if 'name' and 'pwd' in session:
+            return redirect(url_for('home'))
+            
+        return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    if 'name' and 'pwd' in session:
+        session.pop('name', None)
+        session.pop('pwd', None)
+        flash('You have been logged out!')
+
+    return redirect(url_for('login'))
 
 @app.route('/home')
 def home():
-    # pagination
-    page = request.args.get('page', 1, type=int)
-    all_data = Data.query.order_by(desc(Data.timestamp)).paginate(page = page, per_page = 20)
-    # top_data = Data.query.order_by(desc(Data.timestamp)).first()
-    # print(dir(all_data))
 
-    #for infinte scroll
-    if 'hx_request' in request.headers:
-        return render_template("table.html", datas = all_data)
-    return render_template("home.html", datas = all_data)
+    if 'name' and 'pwd' in session:
+        # pagination
+        page = request.args.get('page', 1, type=int)
+        all_data = Data.query.order_by(desc(Data.timestamp)).paginate(page = page, per_page = 20)
+        # top_data = Data.query.order_by(desc(Data.timestamp)).first()
+        # print(dir(all_data))
+
+        #for infinte scroll
+        if 'hx_request' in request.headers:
+            return render_template("table.html", datas = all_data)
+        return render_template("home.html", datas = all_data)
+    else:
+        flash('Unauthorised access!')
+        return redirect(url_for('login'))
 
 # for active search
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    # if methods == 'POST':
-    search_table = request.args.get('search')
-    if search_table:
-        tables = Data.query.filter(Data.uuid.contains(search_table) | Data.timestamp.contains(search_table))
-        
+    if 'name' and 'pwd' in session:
+        # if methods == 'POST':
+        search_table = request.args.get('search')
+        if search_table:
+            tables = Data.query.filter(Data.uuid.contains(search_table) | Data.timestamp.contains(search_table))
+            
+        else:
+            tables = []
+        # return render_template('search.html', result = tables)
+            
+        if 'hx_request' in request.headers:
+            return render_template("searchres.html", result = tables)
+        return render_template('search.html', result = tables)
     else:
-        tables = []
-    # return render_template('search.html', result = tables)
-        
-    if 'hx_request' in request.headers:
-        return render_template("searchres.html", result = tables)
-    return render_template('search.html', result = tables)
+        flash('Unauthorised access!')
+        return redirect(url_for('login'))
 
 # for average
 def get_average(a,w):
@@ -127,32 +153,36 @@ def get_average(a,w):
         flash("Incorrect UUID")
 @app.route('/average')
 def average():
-    # per hour
-    a = request.args.get('a')
-    uuid1 = request.args.get('uuid')
-    average1 = get_average(a,uuid1)
-    if average1:
-        return render_template('average.html', avg = average1)
-    # per day
-    n = request.args.get('n')
-    uuid2 = request.args.get('uuid2')
-    average2 = get_average(n, uuid2)
-    if average2:
-    # print(int(average))
-    # if 'hx_request' in request.headers:
-    #     return render_template('avg.html', avg = average)
-        return render_template('average.html', avn = average2)
-        
-    # per week
-    w = request.args.get('w')
-    uuid2 = request.args.get('uuid2')
-    average3 = get_average(w,uuid2)
-            # print(int(average))
-    # if 'hx_request' in request.headers:
-    #     return render_template('avg.html', avg = average)
-    if average3:
-        return render_template('average.html', avw = average3)
-    return render_template('average.html')
+    if 'name' and 'pwd' in session:
+        # per hour
+        a = request.args.get('a')
+        uuid1 = request.args.get('uuid')
+        average1 = get_average(a,uuid1)
+        if average1:
+            return render_template('average.html', avg = average1)
+        # per day
+        n = request.args.get('n')
+        uuid2 = request.args.get('uuid2')
+        average2 = get_average(n, uuid2)
+        if average2:
+        # print(int(average))
+        # if 'hx_request' in request.headers:
+        #     return render_template('avg.html', avg = average)
+            return render_template('average.html', avn = average2)
+            
+        # per week
+        w = request.args.get('w')
+        uuid2 = request.args.get('uuid2')
+        average3 = get_average(w,uuid2)
+                # print(int(average))
+        # if 'hx_request' in request.headers:
+        #     return render_template('avg.html', avg = average)
+        if average3:
+            return render_template('average.html', avw = average3)
+        return render_template('average.html')
+    else:
+        flash('Unauthorized access!')
+        return(redirect(url_for('login')))
 
 # running the flask app
 
