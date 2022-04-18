@@ -159,26 +159,27 @@ def average():
         uuid1 = request.args.get('uuid')
         average1 = get_average(a,uuid1)
         if average1:
+            if 'hx_request' in request.headers:
+                return render_template('avg.html', avg = average1)
             return render_template('average.html', avg = average1)
         # per day
         n = request.args.get('n')
         uuid2 = request.args.get('uuid2')
         average2 = get_average(n, uuid2)
         if average2:
-        # print(int(average))
-        # if 'hx_request' in request.headers:
-        #     return render_template('avg.html', avg = average)
+            if 'hx_request' in request.headers:
+                return render_template('avg.html', avn = average2)
             return render_template('average.html', avn = average2)
             
         # per week
         w = request.args.get('w')
         uuid2 = request.args.get('uuid2')
         average3 = get_average(w,uuid2)
-                # print(int(average))
-        # if 'hx_request' in request.headers:
-        #     return render_template('avg.html', avg = average)
         if average3:
+            if 'hx_request' in request.headers:
+                return render_template('avg.html', avw = average3)
             return render_template('average.html', avw = average3)
+
         return render_template('average.html')
     else:
         flash('Unauthorized access!')
