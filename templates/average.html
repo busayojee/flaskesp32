@@ -16,7 +16,7 @@
     {% endif %}  
  {% endwith %}
 </div>
-<form action="/average" method="get">
+<form action="/average"  hx-get="/average" hx-swap="innerHTML" hx-target="#avgres"  method="get">
         <input list="uuid" name="uuid">
         <datalist id="uuid">
           <option value="cac1010b-fa6e-4641-9d95-ba82ec4e5d27">
@@ -24,7 +24,7 @@
         </datalist> 
       
 <input type="number" name="a" min="1" max="24" step="1" >
-<button class="btn btn-success" type="submit" hx-get="/average" hx-swap="beforeend" hx-target="#avgres" >Calculate</button>
+<button class="btn btn-success" type="submit">Calculate</button>
 </form>
 <div>
     <span id = avgres>
@@ -34,26 +34,24 @@
 
 </div>
    
-<form action="/average" method="get">
+<form action="/average" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres1" method="get">
     <input list="uuid" name="uuid2">
         
     <input type="number" name="n" min="1" max="31" step="1" >
     <button class="btn btn-success" type="submit">Calculate</button>
     </form>
-    <div id = avgres>
-        <span>{{avn}}</span>
-    
-    </div>
-    <form action="/average" method="get">
+    <span id = avgres1>
+        {% include 'avg.html' %}
+    </span>
+    <form action="/average" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres2" method="get">
         <input list="uuid" name="uuid2">
             
         <input type="number" name="w" min="1" max="52" step="1" >
         <button class="btn btn-success" type="submit">Calculate</button>
         </form>
-        <div id = avgres>
-            <span>{{avw}}</span>
-        
-        </div>
+        <span id = avgres2>
+            {% include 'avg.html' %}
+        </span>
         <script>
             info = document.getElementById("info")
             x_button = document.getElementById("x_button")
