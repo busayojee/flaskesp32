@@ -1,22 +1,16 @@
 {% extends 'layout.html' %}
 {% block head %}
+
     <title>home</title>
   
 {% endblock %}
 {% block body %}
 
- 
-
-        
-
- 
-     
-   
-    <table class="table table-primary table-striped">
-        <tr> 
-            <th scope="col">UUID</th>
-            <th scope="col">Timestamp</th>
-            <th scope="col">Decibel</th>
+    <table class="table table-striped">
+        <tr class="header1"> 
+            <th scope="col"class="headerRow">Timestamp</th>
+            <th scope="col"class="headerRow">UUID</th>
+            <th scope="col"class="headerRow">Decibel</th>
         </tr>
        <tbody hx-get="/home" hx-trigger="every 2s">
         {% include 'table.html' %}
@@ -24,5 +18,5 @@
    </tbody>
    
     </table>
-    
+
 {% endblock %}
