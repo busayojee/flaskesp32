@@ -16,15 +16,19 @@
     {% endif %}  
  {% endwith %}
 </div>
-<form action="/average"  hx-get="/average" hx-swap="innerHTML" hx-target="#avgres"  method="get">
-        <input list="uuid" name="uuid">
+{% if average1  %}
+<form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres" >
+{% else %}
+<form>
+    {% endif %}
+        <input list="uuid" name="uuid" placeholder="Select a uuid">
         <datalist id="uuid">
           <option value="cac1010b-fa6e-4641-9d95-ba82ec4e5d27">
             <option value="abcde">
         </datalist> 
       
-<input type="number" name="a" min="1" max="24" step="1" >
-<button class="btn btn-success" type="submit">Calculate</button>
+<input type="number" name="a" min="1" max="24" step="1" placeholder="hrs" >
+<button class="btn outline" id="textdecor2" type="submit">Calculate</button>
 </form>
 <div>
     <span id = avgres>
@@ -34,23 +38,33 @@
 
 </div>
    
-<form action="/average" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres1" method="get">
-    <input list="uuid" name="uuid2">
+{% if average2 %}
+<form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres1">
+{% else %}
+<form action="/average" method="get">
+    {% endif %}
+    <input list="uuid" name="uuid" placeholder="Select a uuid">
         
-    <input type="number" name="n" min="1" max="31" step="1" >
-    <button class="btn btn-success" type="submit">Calculate</button>
-    </form>
+    <input type="number" name="n" min="1" max="31" step="1" placeholder="days">
+    <button class="btn outline "id="textdecor2"type="submit">Calculate</button>
+   </form>
+   <div>
     <span id = avgres1>
-        {% include 'avg.html' %}
+        {% include 'avn.html' %}
     </span>
-    <form action="/average" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres2" method="get">
-        <input list="uuid" name="uuid2">
+</div>
+    {% if average3 %}
+    <form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres2">
+    {% else %}
+    <form action="/average" method="get">
+        {% endif %}
+        <input list="uuid" name="uuid" placeholder="Select a uuid">
             
-        <input type="number" name="w" min="1" max="52" step="1" >
-        <button class="btn btn-success" type="submit">Calculate</button>
+        <input type="number" name="w" min="1" max="52" step="1" placeholder="wks">
+        <button class="btn outline "id="textdecor2" type="submit">Calculate</button>
         </form>
         <span id = avgres2>
-            {% include 'avg.html' %}
+            {% include 'avw.html' %}
         </span>
         <script>
             info = document.getElementById("info")

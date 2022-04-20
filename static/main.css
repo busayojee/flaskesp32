@@ -2,6 +2,10 @@
 .page{
     margin: auto;
     padding: 70px;
+    
+}
+.space{
+    height: 90px;
 }
 .login{
     display: flex;
@@ -55,7 +59,7 @@
     background: rgb(244, 244, 244);
     border-radius: 20px;
     width: 50%;
-    height: 115%;
+    height: 150%;
     font-family: 'Quicksand', sans-serif;
 }
 .header{

@@ -2,8 +2,7 @@ from flask import Flask, redirect, render_template, request, flash, session, url
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 
 
@@ -59,7 +58,7 @@ class Sensor(Resource):
         db.session.add(sensor_new)
         db.session.commit()
         return sensor_new, 201
-
+# creating the endpoint
 api.add_resource(Sensor, "/sensor")
 
 @app.route('/')
@@ -90,7 +89,7 @@ def login():
             return redirect(url_for('home'))
             
         return render_template('login.html')
-
+# logging out of the website
 @app.route('/logout')
 def logout():
     if 'name' and 'pwd' in session:
@@ -99,7 +98,7 @@ def logout():
         flash('You have been logged out!')
 
     return redirect(url_for('login'))
-
+# home page
 @app.route('/home')
 def home():
 
@@ -139,10 +138,30 @@ def search():
         return redirect(url_for('login'))
 
 # for average
-def get_average(a,w):
+
+
+def get_average_hour(a,w):              # Average per hour
     if a and w:
         a = int(a)
-        last_data = Data.query.filter_by(uuid = w).order_by(desc(Data.timestamp)).limit(a * 60).all()
+        
+        current_time = datetime.utcnow()            # getting current time
+        time_diff = current_time - timedelta(hours=a) # getting time difference
+        last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
+        divider = len(last_data) #length of output
+        num = 0
+        for last in last_data:
+            num = num + last.decibel
+        if divider != 0:
+            average = num/divider
+            return int(average)
+        flash("No Data")
+def get_average_day(a,w): # getting the average per day
+    if a and w:
+        a = int(a)
+        
+        current_time = datetime.utcnow()
+        time_diff = current_time - timedelta(days=a)
+        last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
         divider = len(last_data)
         num = 0
         for last in last_data:
@@ -150,34 +169,53 @@ def get_average(a,w):
         if divider != 0:
             average = num/divider
             return int(average)
-        flash("Incorrect UUID")
+        flash("No Data")
+def get_average_week(a,w):  # getting the average per week
+    if a and w:
+        a = int(a)
+        
+        current_time = datetime.utcnow()
+        time_diff = current_time - timedelta(weeks=a)
+        last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
+        divider = len(last_data)
+        num = 0
+        for last in last_data:
+            num = num + last.decibel
+        if divider != 0:
+            average = num/divider
+            return int(average)
+        flash("No Data")
+
+# average page
 @app.route('/average')
 def average():
     if 'name' and 'pwd' in session:
         # per hour
         a = request.args.get('a')
         uuid1 = request.args.get('uuid')
-        average1 = get_average(a,uuid1)
+        
+        average1 = get_average_hour(a,uuid1)
         if average1:
             if 'hx_request' in request.headers:
                 return render_template('avg.html', avg = average1)
             return render_template('average.html', avg = average1)
+
         # per day
         n = request.args.get('n')
-        uuid2 = request.args.get('uuid2')
-        average2 = get_average(n, uuid2)
+        uuid1 = request.args.get('uuid')
+        average2 = get_average_day(n, uuid1)
+       
         if average2:
             if 'hx_request' in request.headers:
-                return render_template('avg.html', avn = average2)
-            return render_template('average.html', avn = average2)
-            
+                return render_template('avn.html', avn = average2)
+            return render_template('average.html', avn = average2) 
         # per week
         w = request.args.get('w')
-        uuid2 = request.args.get('uuid2')
-        average3 = get_average(w,uuid2)
+        uuid1 = request.args.get('uuid')
+        average3 = get_average_week(w,uuid1)
         if average3:
             if 'hx_request' in request.headers:
-                return render_template('avg.html', avw = average3)
+                return render_template('avw.html', avw = average3)
             return render_template('average.html', avw = average3)
 
         return render_template('average.html')

@@ -9,22 +9,22 @@ hx-get = "/search"
 hx-trigger="keyup changed delay:500ms"
 hx-target="#search_res"
 hx-indicator=".htmx-indicator"
-placeholder="Search"
+placeholder="Search by UUID or timestamp"
 class="bg-white h-10 px-5 pr-10 rounded-full text-2xl focus:outline-none"
 >
 <span class="htmx-indicator">Searching...</span>
-<button type="submit">Search</button>
+<button type="submit" class="btn outline "id="textdecor2">Search</button>
 
 </div> 
 </form>
 
 
 
- <table class="table table-primary table-striped">
-    <tr> 
-        <th scope="col">UUID</th>
-        <th scope="col">Timestamp</th>
-        <th scope="col">Decibel</th>
+ <table class="table table-striped">
+    <tr class="header1"> 
+        <th scope="col" class="headerRow">UUID</th>
+        <th scope="col" class="headerRow">Timestamp</th>
+        <th scope="col" class="headerRow">Decibel</th>
     </tr>
    <tbody id="search_res">
    {% include 'searchres.html' %}
