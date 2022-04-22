@@ -133,7 +133,7 @@
     text-transform: uppercase;
     font-weight: bold;
     font-family: 'Oswald', sans-serif;
-    animation: transitionin 2s;
+    animation: transitionin 1s;
 }
 
 .notify{  
@@ -142,11 +142,12 @@
     box-sizing:border-box;
     color:white;  
     text-align:center; 
-    background:rgba(226, 102, 102, 0.788);
+    background:#CC0000;
    overflow-y:hidden; 
 	max-height: 300px; /* approximate max height */
     width: 100%;
-    animation: transtionin 2s;
+    animation: transtionin 1s;
+    padding-top: 1rem;
     
    }
    .header1{
@@ -212,9 +213,52 @@
   transition: 0.2s;  
   transition-timing-function: ease-in;
 }
- .perHour{
-     border: 2px soild #8f2a46;
-     border-radius: 5px;
+
+ .perTime{
+     text-align: center;
  }
-      
+ .calcAvg > .input1{
+     text-align: center;
+    width: 60%;
+    height:3rem;
+    border-radius: 25px;
+    color: #8f2a46;
+    border: 2px solid #8f2a46;
+}
+.calcAvg > .input2{
+    text-align: center;
+    width: 10%;
+    height:3rem;
+    border-radius: 25px;
+    color: #8f2a46;
+    border: 2px solid #8f2a46;
+}
+.calcAvg input::placeholder{
+    text-align: center;
+    color: #8f2a46;
+}
+.btnAvg{
+   padding: 2rem;
+   margin:.5rem;
+   width: 100%;
+   margin: auto;
+   margin:1rem;
+   color:  #8f2a46;
+   background-color: white;
+   border: 2px solid  #8f2a46;
+   border-radius: 25px;
+   text-transform: capitalize;
+   font-weight: bolder;
+}
+.btnAvg:hover{
+    background-color: #8f2a46;
+    color: White;
+    font-weight: Bolder;
+
+}   
+#btnCalc{
+    background-color: #8f2a46;
+    border-radius: 5px;
+    color: white;
+}
   
