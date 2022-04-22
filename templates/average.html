@@ -7,7 +7,7 @@
 {% with messages = get_flashed_messages() %}  
     {% if messages %}  
           {% for message in messages %}
-          <div class="notify" id = "x_button"> 
+          <div class="notify"id = "x_button"> 
            <i class="fa-solid fa-xmark button"onclick="closebutton()"></i>
            <div id="info"> <p>{{ message }}</p> </div> 
           </div>
@@ -19,17 +19,22 @@
 {% if average1  %}
 <form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres" >
 {% else %}
-<form>
+<!-- Per Hour Button -->
+<div class="perTime">
+    <button id = "former1" class="btnAvg" >per hour</button>
+
+<form id="formElement1" class="calcAvg" style="display: none;">
     {% endif %}
-        <input list="uuid" name="uuid" placeholder="Select a uuid">
+        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
         <datalist id="uuid">
           <option value="cac1010b-fa6e-4641-9d95-ba82ec4e5d27">
             <option value="abcde">
         </datalist> 
       
-<input type="number" name="a" min="1" max="24" step="1" placeholder="hrs" >
-<button class="btn outline" id="textdecor2" type="submit">Calculate</button>
+<input type="number" name="a" min="1" max="24" step="1" placeholder="hrs" class="input2">
+<button class="btn outline" id="btnCalc" type="submit">Calculate</button>
 </form>
+</div>
 <div>
     <span id = avgres>
         {% include 'avg.html' %}
@@ -41,14 +46,18 @@
 {% if average2 %}
 <form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres1">
 {% else %}
-<form action="/average" method="get">
+<!-- Per Day Button -->
+<div class="perTime">
+    <button id="former2" class="btnAvg" >Per Day</button>
+
+    <form action="/average" method="get" id="formElement2" class="calcAvg" style="display: none;">
     {% endif %}
-    <input list="uuid" name="uuid" placeholder="Select a uuid">
+    <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
         
-    <input type="number" name="n" min="1" max="31" step="1" placeholder="days">
-    <button class="btn outline "id="textdecor2"type="submit">Calculate</button>
+    <input type="number" name="n" min="1" max="31" step="1" placeholder="days"class="input2">
+    <button class="btn outline "id="btnCalc"type="submit">Calculate</button>
    </form>
-   <div>
+
     <span id = avgres1>
         {% include 'avn.html' %}
     </span>
@@ -56,23 +65,72 @@
     {% if average3 %}
     <form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres2">
     {% else %}
-    <form action="/average" method="get">
+<!-- Per Week Button -->
+<div class="perTime">
+        <button class="btnAvg" id="former3">Per Week</button>
+    
+    <form action="/average" method="get" id="formElement3"class="calcAvg" style="display: none;">
         {% endif %}
-        <input list="uuid" name="uuid" placeholder="Select a uuid">
+        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
             
-        <input type="number" name="w" min="1" max="52" step="1" placeholder="wks">
-        <button class="btn outline "id="textdecor2" type="submit">Calculate</button>
+        <input type="number" name="w" min="1" max="52" step="1" placeholder="wks"class="input2">
+        <button class="btn outline "id="btnCalc" type="submit">Calculate</button>
         </form>
         <span id = avgres2>
             {% include 'avw.html' %}
         </span>
+</div>
         <script>
-            info = document.getElementById("info")
-            x_button = document.getElementById("x_button")
+            info = document.getElementById("info");
+            x_button = document.getElementById("x_button");
             function closebutton(){
-                info.style.display = "none";
-                x_button.style.display = "none";
+                info.style.display = 'none';
+                x_button.style.display = 'none';
             }
+        </script>
+
+        <script>
+            var form1 = document.getElementById('formElement1');
+            var first = true;
+            var former1 = document.getElementById('former1');
+
+            former1.onclick = function(){
+            if(first){
+                form1.style.display = "none";
+                first = false;
+            }
+            else{
+                form1.style.display = "block";
+                first = true;
+            }
+           }
+           var form2 = document.getElementById('formElement2');
+            var first = true;
+            var former2 = document.getElementById('former2');
+
+            former2.onclick = function(){
+            if(first){
+                form2.style.display = "none";
+                first = false;
+            }
+            else{
+                form2.style.display = "block";
+                first = true;
+            }
+           }
+           var form3 = document.getElementById('formElement3');
+            var first = true;
+            var former3 = document.getElementById('former3');
+            former3.onclick = function(){
+            if(first){
+                form3.style.display = "none";
+                first = false;
+            }
+            else{
+                form3.style.display = "block";
+                first = true;
+            }
+           }
         </script>
 
 {% endblock %}
