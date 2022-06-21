@@ -68,6 +68,7 @@ def index():
 login_database = {"busayo":"busayo","admin":"admin","1234":"1234"}
 
 # logging into the website
+# Big Issues with the login page
 @app.route('/login', methods= ['GET', 'POST'])
 def login():
     if request.method == 'POST':
