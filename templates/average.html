@@ -3,6 +3,7 @@
 <title>average</title>
 {% endblock %}
 {% block body %}
+<h3 class="i-name">Average</h3>
 <div>
 {% with messages = get_flashed_messages() %}  
     {% if messages %}  
@@ -23,9 +24,9 @@
 <div class="perTime">
     <button id = "former1" class="btnAvg" >per hour</button>
 
-<form id="formElement1" class="calcAvg" style="display: none;">
+<form action="/average" method="get" id="formElement1" class="calcAvg" style="display: none;">
     {% endif %}
-        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
+        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1" required>
         <datalist id="uuid">
           <option value="cac1010b-fa6e-4641-9d95-ba82ec4e5d27">
             <option value="abcde">
@@ -34,8 +35,6 @@
 <input type="number" name="a" min="1" max="24" step="1" placeholder="hrs" class="input2">
 <button class="btn outline" id="btnCalc" type="submit">Calculate</button>
 </form>
-</div>
-<div>
     <span id = avgres>
         {% include 'avg.html' %}
     </span>
@@ -52,7 +51,7 @@
 
     <form action="/average" method="get" id="formElement2" class="calcAvg" style="display: none;">
     {% endif %}
-    <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
+    <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1" required>
         
     <input type="number" name="n" min="1" max="31" step="1" placeholder="days"class="input2">
     <button class="btn outline "id="btnCalc"type="submit">Calculate</button>
@@ -71,7 +70,7 @@
     
     <form action="/average" method="get" id="formElement3"class="calcAvg" style="display: none;">
         {% endif %}
-        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1">
+        <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1" required>
             
         <input type="number" name="w" min="1" max="52" step="1" placeholder="wks"class="input2">
         <button class="btn outline "id="btnCalc" type="submit">Calculate</button>
@@ -79,6 +78,27 @@
         <span id = avgres2>
             {% include 'avw.html' %}
         </span>
+</div>
+{% if average2 %}
+<form action="/average" method="get" hx-get="/average" hx-swap="innerHTML" hx-target="#avgres4">
+{% else %}
+<!-- Per Day Button -->
+<div class="perTime">
+    <button id="former4" class="btnAvg" >Dates</button>
+
+    <form action="/average" method="get" id="formElement4" class="calcAvg" style="display: none;">
+    {% endif %}
+    <input list="uuid" name="uuid" placeholder="Select a uuid" class="input1" required><br>
+    start date    
+    <input type="date" name="y" class="input2" required><br>
+    end date
+    <input type="date" name="z" class="input2" required><br>
+    <button class="btn outline "id="btnCalc"type="submit">Calculate</button>
+   </form>
+
+    <span id = avgres4>
+        {% include 'avf.html' %}
+    </span>
 </div>
         <script>
             info = document.getElementById("info");
@@ -96,11 +116,11 @@
 
             former1.onclick = function(){
             if(first){
-                form1.style.display = "none";
+                form1.style.display = "block";
                 first = false;
             }
             else{
-                form1.style.display = "block";
+                form1.style.display = "none";
                 first = true;
             }
            }
@@ -110,11 +130,11 @@
 
             former2.onclick = function(){
             if(first){
-                form2.style.display = "none";
+                form2.style.display = "block";
                 first = false;
             }
             else{
-                form2.style.display = "block";
+                form2.style.display = "none";
                 first = true;
             }
            }
@@ -123,11 +143,25 @@
             var former3 = document.getElementById('former3');
             former3.onclick = function(){
             if(first){
-                form3.style.display = "none";
+                form3.style.display = "block";
                 first = false;
             }
             else{
-                form3.style.display = "block";
+                form3.style.display = "none";
+                first = true;
+            }
+           }
+           var form4 = document.getElementById('formElement4');
+            var first = true;
+            var former4 = document.getElementById('former4');
+
+            former4.onclick = function(){
+            if(first){
+                form4.style.display = "block";
+                first = false;
+            }
+            else{
+                form4.style.display = "none";
                 first = true;
             }
            }

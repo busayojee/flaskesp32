@@ -1,14 +1,10 @@
-from flask import Flask, redirect, render_template, request, flash, session, url_for
+from flask import Flask, redirect, render_template, request, flash, session, url_for,g
 from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 
-
-
-
 # initialiazing the flask app
-
 app = Flask(__name__)
 api = Api(app)
 app.secret_key = "flaskesp32"
@@ -21,13 +17,12 @@ db = SQLAlchemy(app)
 def generate_UUID():
    return ["cac1010b-fa6e-4641-9d95-ba82ec4e5d27", "abcde"]
 
-
+# Database model
 class Data(db.Model):
     uuid = db.Column(db.String(60), name = "uuid", nullable = False, primary_key = True)
-    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow, primary_key=True)
+    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.now, primary_key=True)
     decibel = db.Column(db.Integer, nullable = False)
 # db.create_all()
-
 
 # creating my request parser
 sensor_post = reqparse.RequestParser()
@@ -41,7 +36,7 @@ resource_fields = {
     "decibel":fields.Integer
 }
 
-
+# API
 class Sensor(Resource):
     def get(self):
         datas = Data.query.all()
@@ -58,17 +53,19 @@ class Sensor(Resource):
         db.session.add(sensor_new)
         db.session.commit()
         return sensor_new, 201
+
 # creating the endpoint
 api.add_resource(Sensor, "/sensor")
 
+# main route
 @app.route('/')
 def index():
     return render_template("login.html")
+
 # login username and password
 login_database = {"busayo":"busayo","admin":"admin","1234":"1234"}
 
 # logging into the website
-# Big Issues with the login page
 @app.route('/login', methods= ['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -78,10 +75,12 @@ def login():
         session['pwd'] = pwd
         if name not in login_database:
             flash("User not found")
+            session.pop('name', None)
             return render_template('login.html')
         else:
             if login_database[name]!= pwd:
                 flash("Incorrect password")
+                session.pop('name', None)
                 return render_template('login.html')
             else:
                 return redirect('/home')
@@ -90,6 +89,7 @@ def login():
             return redirect(url_for('home'))
             
         return render_template('login.html')
+
 # logging out of the website
 @app.route('/logout')
 def logout():
@@ -99,11 +99,22 @@ def logout():
         flash('You have been logged out!')
 
     return redirect(url_for('login'))
+
+# to keep track of sessions
+@app.before_request
+def before_request():
+    g.name = None
+    if 'name' in session:
+        g.name = session['name']
+
 # home page
 @app.route('/home')
 def home():
 
-    if 'name' and 'pwd' in session:
+    if g.name:
+        # number of devices
+        devices = len(generate_UUID())
+        # print(devices)
         # pagination
         page = request.args.get('page', 1, type=int)
         all_data = Data.query.order_by(desc(Data.timestamp)).paginate(page = page, per_page = 20)
@@ -112,16 +123,16 @@ def home():
 
         #for infinte scroll
         if 'hx_request' in request.headers:
-            return render_template("table.html", datas = all_data)
-        return render_template("home.html", datas = all_data)
+            return render_template("table.html", datas = all_data, devices = devices)
+        return render_template("home.html", datas = all_data, devices = devices)
     else:
         flash('Unauthorised access!')
-        return redirect(url_for('login'))
+        return render_template('login.html')
 
 # for active search
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    if 'name' and 'pwd' in session:
+    if g.name:
         # if methods == 'POST':
         search_table = request.args.get('search')
         if search_table:
@@ -139,13 +150,11 @@ def search():
         return redirect(url_for('login'))
 
 # for average
-
-
 def get_average_hour(a,w):              # Average per hour
     if a and w:
         a = int(a)
         
-        current_time = datetime.utcnow()            # getting current time
+        current_time = datetime.now()            # getting current time
         time_diff = current_time - timedelta(hours=a) # getting time difference
         last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
         divider = len(last_data) #length of output
@@ -160,7 +169,7 @@ def get_average_day(a,w): # getting the average per day
     if a and w:
         a = int(a)
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now()
         time_diff = current_time - timedelta(days=a)
         last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
         divider = len(last_data)
@@ -175,7 +184,7 @@ def get_average_week(a,w):  # getting the average per week
     if a and w:
         a = int(a)
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now()
         time_diff = current_time - timedelta(weeks=a)
         last_data = Data.query.filter_by(uuid = w).filter(Data.timestamp>time_diff).all()
         divider = len(last_data)
@@ -186,11 +195,24 @@ def get_average_week(a,w):  # getting the average per week
             average = num/divider
             return int(average)
         flash("No Data")
+def get_average(w,y,z): # getting average based on date
+    # y is start date
+    # z is end date
+    if w:
+        first = Data.query.filter_by(uuid = w).filter(Data.timestamp.between(y,z)).all()
+        firsts = len(first)
+        fi = 0
+        for firs in first:
+            fi = fi + firs.decibel
+        if firsts !=0:
+            average = fi/firsts   
+            return int(average)
+        flash('No data')
 
-# average page
+# average with date   
 @app.route('/average')
 def average():
-    if 'name' and 'pwd' in session:
+    if g.name:
         # per hour
         a = request.args.get('a')
         uuid1 = request.args.get('uuid')
@@ -218,13 +240,65 @@ def average():
             if 'hx_request' in request.headers:
                 return render_template('avw.html', avw = average3)
             return render_template('average.html', avw = average3)
-
+        uuid3 = request.args.get('uuid')
+        startdate = request.args.get('y')
+        enddate = request.args.get('z')
+        if startdate and enddate:
+            if startdate < enddate:
+                average4 = get_average(uuid3,startdate,enddate)
+            
+                if average4:
+                    if 'hx_request' in request.headers:
+                        return render_template('avf.html', avf = average4)
+                    return render_template('average.html', avf = average4)
+                flash('No data')
+            else:
+                flash('Start date must be less than end date')
         return render_template('average.html')
     else:
         flash('Unauthorized access!')
         return(redirect(url_for('login')))
 
-# running the flask app
+# Daily average
+@app.route('/dailyavg')
+def dailyavg():
+    now = datetime.now()
+    diff = now - timedelta(days= 1)
+    news = Data.query.filter(Data.timestamp>diff).all()
+    num = len(news)
+    m = 0
+    for new in news:
+        m += new.decibel
+    if num!=0:
+        average = m/num
+    else:
+        average = 0
+    daily = int(average)
+    # print(num)
+    # print(m)
+    # print(daily)
+    if 'hx_request' in  request.headers:
+        return render_template('avd.html', avd = daily)
+    return redirect('/')
+
+# hourly average
+@app.route('/houravg')
+def houravg():
+    now = datetime.now()
+    diff = now - timedelta(hours = 1)
+    news = Data.query.filter(Data.timestamp>diff).all()
+    num = len(news)
+    m = 0
+    for new in news:
+        m += new.decibel
+    if num!=0:
+        average = m/num
+    else:
+        average = 0
+    daily = int(average)
+    if 'hx_request' in  request.headers:
+        return render_template('avh.html', avh = daily)
+    return redirect('/')
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)

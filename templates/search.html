@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
+<h3 class="i-name">Search</h3>
 <form method="GET" action="/search">
 <div class="w-small w-2/3 mx-auto py-10 text-gray-600">
 
@@ -13,7 +14,7 @@ placeholder="Search by UUID or timestamp"
 class="bg-white h-10 px-5 pr-10 rounded-full text-2xl focus:outline-none"
 >
 <span class="htmx-indicator">Searching...</span>
-<button type="submit" class="btn outline "id="textdecor2">Search</button>
+<button type="submit" class="btn outline "id="textdecor2"><i class="far fa-search"></i></button>
 
 </div> 
 </form>

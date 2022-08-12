@@ -4,7 +4,36 @@
     <title>home</title>
   
 {% endblock %}
-{% block body %}
+{% block body %} 
+
+    
+
+<h3 class="i-name">Dashboard</h3>
+<div class="values">
+    <div class="val-box">
+        <i class="fas fa-users"></i>
+        <div>
+            <h3>{{devices}}</h3>
+            <span>Devices</span>
+        </div>
+    </div>
+    <div class="val-box">
+        <i class="fa-solid fa-hourglass-half"></i>
+        <div hx-get="/houravg" hx-trigger="every 5s"  hx-target="#avh">
+            <h3 id="avh">{% include 'avh.html'%}</h3>
+            <span>Hourly avg</span>
+        </div>
+    </div>
+    <div class="val-box">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <div hx-get="/dailyavg" hx-trigger="every 5s"  hx-target="#avg">
+            <h3 id="avg">{% include 'avg.html'%}</h3>
+            <span>Daily avg</span>
+        </div>
+    </div>
+</div>
+
+<p style="padding: 0.5rem;"></p>
 
     <table class="table table-striped">
         <tr class="header1"> 
@@ -18,5 +47,7 @@
    </tbody>
    
     </table>
+ 
+  
 
 {% endblock %}
