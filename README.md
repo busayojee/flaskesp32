@@ -1,2 +1,4 @@
 # flaskesp32
-Create a virtual env
+Create a virtual environment
+for mac
+
