@@ -13,6 +13,13 @@ For windows
 	
 Activating the virtualenv for windows
 	`<name of virtualenv>/Scripts/activate`
+
+Install the requirements
+
+`pip3 install -r requirements.txt`
+
+Run the app.py program
+
 	
 
 		
