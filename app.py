@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 
 # creating the UUID's
 def generate_UUID():
-   return ["cac1010b-fa6e-4641-9d95-ba82ec4e5d27", "abcde"]
+   return ["cac1010b-fa6e-4641-9d95-ba82ec4e5d27"]
 
 # Database model
 class Data(db.Model):
@@ -99,6 +99,7 @@ def logout():
         flash('You have been logged out!')
 
     return redirect(url_for('login'))
+
 
 # to keep track of sessions
 @app.before_request
